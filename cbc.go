@@ -24,7 +24,12 @@ func Encrypt(key, content []byte) ([]byte, error) {
 	return crypted, nil
 }
 
-func Decrypt(key []byte, ciphertext []byte) ([]byte, error) {
+func Decrypt(key []byte, ciphertext []byte) (b []byte, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("panic recovered: %v", r)
+		}
+	}()
 	var iv [16]byte
 	c, err := aes.NewCipher(key[:])
 	if err != nil {
@@ -34,7 +39,7 @@ func Decrypt(key []byte, ciphertext []byte) ([]byte, error) {
 	plain := make([]byte, len(ciphertext))
 	cbc.CryptBlocks(plain, ciphertext)
 
-	return PKCS5Trimming(plain), nil
+	return PKCS5Trimming(plain), err
 }
 
 func PKCS5Padding(ciphertext []byte, blockSize int) []byte {

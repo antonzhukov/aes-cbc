@@ -77,3 +77,51 @@ func Test_encrypt_decrypt(t *testing.T) {
 		})
 	}
 }
+
+func Test_decrypt(t *testing.T) {
+	tests := []struct {
+		name      string
+		encrypted string
+		key       string
+		want      string
+		wantErr   bool
+	}{
+		{
+			name:      "happy path",
+			encrypted: "f37b5ec2133abf48ebad8fe1c2d964cb",
+			key:       "3faa209856518a53411d93c76c44ca73c02daae1bda71ded958d82f9c1ea8ff2",
+			want:      "hello world!",
+			wantErr:   false,
+		},
+		{
+			name:      "invalid encrypted message",
+			encrypted: "abc123",
+			key:       "3faa209856518a53411d93c76c44ca73c02daae1bda71ded958d82f9c1ea8ff2",
+			want:      "",
+			wantErr:   true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			key, err := hex.DecodeString(tt.key)
+			if err != nil {
+				t.Errorf("DecodeString() failed: %s", err.Error())
+			}
+			enc, err := hex.DecodeString(tt.encrypted)
+			if err != nil {
+				t.Errorf("DecodeString() failed: %s", err.Error())
+			}
+
+			res, err := Decrypt(key, enc)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("decryptDocInfo() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if string(res) != tt.want {
+				t.Errorf("test failed. Expected %s, got %s", tt.want, string(res))
+			}
+
+		})
+	}
+}
