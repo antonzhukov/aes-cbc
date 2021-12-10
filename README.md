@@ -1,5 +1,5 @@
 # AES-CBC
-Library provides encrypting and decrypting functions using AES CBC encryption
+AES CBC library written in Golang provides encrypting and decrypting functions using AES-CBC (cipher block chaining) encryption mode
 
 ## Usage
 
